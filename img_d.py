@@ -1,4 +1,6 @@
 import requests
+import os
+import json
 
 
 def get_content(url):
@@ -16,9 +18,24 @@ def get_content(url):
         return response.content
 
 
-if __name__ == "__main__":
-    filename = "hubble.jpg"
-    url = "https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg"
-    picture = get_content(url)
-    with open(filename, "wb") as f:
+def save_image(image, path):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    with open(file_path, "wb") as f:
         f.write(picture)
+
+
+if __name__ == "__main__":
+    #directory = "images"
+    #filename = "hubble.jpg"
+    #url = "https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg"
+    #picture = get_content(url)
+    #file_path = directory + "/" + filename
+    #save_image(picture, file_path)
+    url = 'https://api.spacexdata.com/v3/launches/'
+    launches = json.loads(get_content(url))[::-1]
+    for launch in launches:
+        images = launch.get("links").get("flickr_images")
+        if images:
+            print(images)
+            break
