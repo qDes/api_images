@@ -1,6 +1,7 @@
 import requests
 import os
 import json
+from typing import List
 
 
 def get_content(url):
@@ -18,12 +19,28 @@ def get_content(url):
         return response.content
 
 
-def save_image(image, path):
+def save_image(image, filepath):
+    with open(filepath, "wb") as f:
+        f.write(image)
+
+
+def fetch_spacex_last_launch() -> List:
+    url = 'https://api.spacexdata.com/v3/launches/'
+    launches = json.loads(get_content(url))[::-1]
+    for launch in launches:
+        images = launch.get("links").get("flickr_images")
+        if images:
+            break
+    return images
+
+
+def save_images(image_urls, directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
-    with open(file_path, "wb") as f:
-        f.write(picture)
-
+    for num, image_url in enumerate(image_urls):
+        image = get_content(image_url)
+        filepath = f"{directory}/spacex{num+1}.jpg"
+        save_image(image, filepath)
 
 if __name__ == "__main__":
     #directory = "images"
@@ -32,10 +49,5 @@ if __name__ == "__main__":
     #picture = get_content(url)
     #file_path = directory + "/" + filename
     #save_image(picture, file_path)
-    url = 'https://api.spacexdata.com/v3/launches/'
-    launches = json.loads(get_content(url))[::-1]
-    for launch in launches:
-        images = launch.get("links").get("flickr_images")
-        if images:
-            print(images)
-            break
+    image_urls = fetch_spacex_last_launch()
+    save_images(image_urls, "images")
