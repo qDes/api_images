@@ -1,4 +1,4 @@
-
+*.pem
 *.swp
 *.jpg
 # Byte-compiled / optimized / DLL files
