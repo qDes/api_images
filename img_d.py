@@ -1,8 +1,9 @@
 import requests
 import os
 import json
-from typing import List
 
+from typing import List
+from PIL import Image
 
 def get_content(url, payload={}):
     try:
@@ -47,8 +48,8 @@ def save_images(image_urls, directory):
     for num, image_url in enumerate(image_urls):
         image = get_content(image_url)
         ext = image_url.split('.')[-1]
-        print(ext)
-        filepath = f"{directory}/spacex{num+1}.{ext}"
+        #print(ext)
+        filepath = f"{directory}/hubble{num+1}.{ext}"
         save_image(image, filepath)
 
 
@@ -77,6 +78,34 @@ def get_collection_urls(collection):
     return collection_urls
 
 
+def get_picture_center(image):
+    center_x = int(image.width/2)
+    center_y = int(image.height/2)
+    return (center_x, center_y)
+
+
+def get_frame_crds(image):
+    crd_x, crd_y = get_picture_center(image)
+    if crd_x > crd_y:
+        x1 = crd_x - crd_y
+        y1 = 0
+        x2 = crd_x + crd_y
+        y2 = crd_y * 2
+    else:
+        x1 = 0
+        y1 = crd_y - crd_x
+        x2 = crd_x * 2
+        y2 = crd_x + crd_y
+    return (x1, y1, x2, y2)
+
+def crop_image(image):
+    frame_coordinates = get_frame_crds(image)
+    croped = image.crop(frame_coordinates)
+    return croped
+
 if __name__ == "__main__":
-   urls = get_collection_urls("spacecraft")
-   print(urls)
+   #urls = get_collection_urls("spacecraft")
+   #save_images(urls, 'images')
+   image = Image.open("images/hubble5.png")
+   croped = crop_image(image)
+   croped.save("crop.jpg")
