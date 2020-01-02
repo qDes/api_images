@@ -1,3 +1,6 @@
+*.txt
+*.json
+*.checkpoint
 images/
 *.pem
 *.swp
