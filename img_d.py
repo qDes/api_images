@@ -1,9 +1,14 @@
+import glob
 import requests
 import os
 import json
 
+from dotenv import load_dotenv
+from time import sleep
 from typing import List
 from PIL import Image
+from instabot import Bot
+
 
 def get_content(url, payload={}):
     try:
@@ -98,14 +103,71 @@ def get_frame_crds(image):
         y2 = crd_x + crd_y
     return (x1, y1, x2, y2)
 
+
 def crop_image(image):
     frame_coordinates = get_frame_crds(image)
-    croped = image.crop(frame_coordinates)
-    return croped
+    cropped = image.crop(frame_coordinates)
+    return cropped
+
+
+def crop_files_in_folder(folder_name):
+    pictures = os.listdir(folder_name)
+    if not os.path.exists(f"{folder_name}/cropped"):
+        os.makedirs(f"{folder_name}/cropped")   
+    for picture in pictures:
+        try:
+            image = Image.open(f"{folder_name}/{picture}")
+            cropped = crop_image(image)
+            cropped.save(f"{folder_name}/cropped/cropped_{picture}")
+        except IOError:
+            pass
+
+
+def get_posted_pics():
+    posted_pic_list = []
+    try:
+        with open("pics.txt", "r", encoding="utf8") as f:
+            posted_pic_list = f.read().splitlines()
+    except Exception:
+        posted_pic_list = []
+    return posted_pic_list
+
+
+def load_pics(login, password, folder_path):
+    bot = Bot()
+    bot.login(username=login, password=password)
+    timeout = 30
+    posted_pic_list = get_posted_pics()
+    pics = glob.glob(folder_path + "/*.jpg")
+    for pic in pics:
+        bot.upload_photo(pic)
+        if bot.api.last_response.status_code != 200:
+            print(bot.api.last_response)
+            # snd msg
+            break
+        if pic not in posted_pic_list:
+            posted_pic_list.append(pic)
+            with open("pics.txt", "a", encoding="utf8") as f:
+                f.write(pic + "\n")
+        sleep(timeout)
+
 
 if __name__ == "__main__":
-   #urls = get_collection_urls("spacecraft")
-   #save_images(urls, 'images')
-   image = Image.open("images/hubble5.png")
-   croped = crop_image(image)
-   croped.save("crop.jpg")
+    load_dotenv()
+    login = os.environ["login"]
+    password = os.environ["password"]
+    load_pics(login, password, "./images/cropped") 
+    '''
+
+    bot = Bot()
+    pictures = os.listdir("images/test")
+    for pic in pictures:
+        try:
+            bot.upload_photo(f"images/test/{pic}",caption='sasi')
+            break
+        except:
+            continue
+        break
+    
+        sleep(15)
+    '''
