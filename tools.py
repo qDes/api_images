@@ -84,6 +84,6 @@ def get_posted_pics():
     try:
         with open("pics.txt", "r", encoding="utf8") as f:
             posted_pic_list = f.read().splitlines()
-    except Exception:
+    except FileNotFoundError:
         posted_pic_list = []
     return posted_pic_list
