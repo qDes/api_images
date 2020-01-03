@@ -6,7 +6,6 @@ from PIL import Image
 
 
 def get_content(url, payload={}):
-    # FORMAT = '%(levelname): %(message)'
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger('request')
     try:
@@ -30,18 +29,13 @@ def save_image(image, filepath):
         f.write(image)
 
 
-def get_extension(url):
-    ext = url.split('.')[-1]
-    return ext
-
-
 def save_images(image_urls, directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
     for num, image_url in enumerate(image_urls):
         image = get_content(image_url)
-        ext = image_url.split('.')[-1]
-        filepath = f"{directory}/hubble{num+1}.{ext}"
+        ext = os.path.splitext(image_url)[-1]
+        filepath = f"{directory}/hubble{num+1}{ext}"
         save_image(image, filepath)
 
 
@@ -51,23 +45,23 @@ def get_picture_center(image):
     return (center_x, center_y)
 
 
-def get_frame_crds(image):
-    crd_x, crd_y = get_picture_center(image)
-    if crd_x > crd_y:
-        x1 = crd_x - crd_y
+def get_frame_coords(image):
+    coord_x, coord_y = get_picture_center(image)
+    if coord_x > coord_y:
+        x1 = coord_x - coord_y
         y1 = 0
-        x2 = crd_x + crd_y
-        y2 = crd_y * 2
+        x2 = coord_x + coord_y
+        y2 = coord_y * 2
     else:
         x1 = 0
-        y1 = crd_y - crd_x
-        x2 = crd_x * 2
-        y2 = crd_x + crd_y
+        y1 = coord_y - coord_x
+        x2 = coord_x * 2
+        y2 = coord_x + coord_y
     return (x1, y1, x2, y2)
 
 
 def crop_image(image):
-    frame_coordinates = get_frame_crds(image)
+    frame_coordinates = get_frame_coords(image)
     cropped = image.crop(frame_coordinates)
     return cropped
 
