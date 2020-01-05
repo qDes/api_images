@@ -1,8 +1,7 @@
-import argparse
+import configargparse
 import os
 import glob
 
-from dotenv import load_dotenv
 from instabot import Bot
 from time import sleep
 from tools import crop_files_in_folder
@@ -15,7 +14,7 @@ from fetch_hubble import fetch_hubble_urls
 def upload_pics(login, password, folder_path):
     bot = Bot()
     bot.login(username=login, password=password)
-    timeout = 30  # set timeout between posts
+    timeout = 30
     posted_pic_list = get_posted_pics()
     pics = glob.glob(folder_path + "/*.*")
     for pic in pics:
@@ -30,10 +29,13 @@ def upload_pics(login, password, folder_path):
 
 
 if __name__ == "__main__":
-    load_dotenv()
-    login = os.environ["LOGIN"]
-    password = os.environ["PASSWORD"]
-    directory = 'images1'
+    parser = configargparse.ArgParser(description='instagram pic uploader',
+                                      default_config_files=['.env'])
+    parser.add("--login", help="instagram login")
+    parser.add("--password", help="instagram password")
+    parser.add("--directory", help="directory with images")
+    args = parser.parse_args()
+    login, password, directory = args.login, args.password, args.directory
     if not os.path.exists(directory):
         fetched_images = fetch_spacex_last_launch()
         fetched_images += fetch_hubble_urls()
