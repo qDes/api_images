@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 Add instagram login, password and picture directory name to file `.env`: <br>
 `login` = %login% <br>
-`password` = %password%
+`password` = %password% <br>
 `directory` = %directory%
 
 ### How to use
