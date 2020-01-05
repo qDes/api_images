@@ -1,9 +1,11 @@
+import argparse
 import os
 import glob
 
 from dotenv import load_dotenv
 from instabot import Bot
 from time import sleep
+from tools import crop_files_in_folder
 from tools import get_posted_pics
 from tools import save_images
 from fetch_spacex import fetch_spacex_last_launch
@@ -19,8 +21,6 @@ def upload_pics(login, password, folder_path):
     for pic in pics:
         bot.upload_photo(pic)
         if bot.api.last_response.status_code != 200:
-            print(bot.api.last_response)
-            # snd msg
             break
         if pic not in posted_pic_list:
             posted_pic_list.append(pic)
@@ -31,6 +31,12 @@ def upload_pics(login, password, folder_path):
 
 if __name__ == "__main__":
     load_dotenv()
-    login = os.environ["login"]
-    password = os.environ["password"]
-    upload_pics(login, password, "./images/cropped")
+    login = os.environ["LOGIN"]
+    password = os.environ["PASSWORD"]
+    directory = 'images1'
+    if not os.path.exists(directory):
+        fetched_images = fetch_spacex_last_launch()
+        fetched_images += fetch_hubble_urls()
+        save_images(fetched_images, directory)
+        crop_files_in_folder(directory)
+    upload_pics(login, password, "./{directory}/cropped")

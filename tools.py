@@ -5,7 +5,7 @@ import logging
 from PIL import Image
 
 
-def get_content(url, payload={}):
+def get_response(url, payload={}):
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger('request')
     try:
@@ -21,7 +21,7 @@ def get_content(url, payload={}):
     except requests.RequestException as err:
         logger.debug(f"{err} error; url: {url}")
     else:
-        return response.json()
+        return response
 
 
 def save_image(image, filepath):
@@ -33,9 +33,9 @@ def save_images(image_urls, directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
     for num, image_url in enumerate(image_urls):
-        image = get_content(image_url)
+        image = get_response(image_url).content
         ext = os.path.splitext(image_url)[-1]
-        filepath = f"{directory}/hubble{num+1}{ext}"
+        filepath = f"{directory}/pic{num+1}{ext}"
         save_image(image, filepath)
 
 
