@@ -10,12 +10,12 @@ from fetch_spacex import fetch_spacex_last_launch
 from fetch_hubble import fetch_hubble_urls
 
 
-def load_pics(login, password, folder_path):
+def upload_pics(login, password, folder_path):
     bot = Bot()
     bot.login(username=login, password=password)
     timeout = 30  # set timeout between posts
     posted_pic_list = get_posted_pics()
-    pics = glob.glob(folder_path + "/*.jpg")
+    pics = glob.glob(folder_path + "/*.*")
     for pic in pics:
         bot.upload_photo(pic)
         if bot.api.last_response.status_code != 200:
@@ -33,4 +33,4 @@ if __name__ == "__main__":
     load_dotenv()
     login = os.environ["login"]
     password = os.environ["password"]
-    load_pics(login, password, "./images/cropped")
+    upload_pics(login, password, "./images/cropped")

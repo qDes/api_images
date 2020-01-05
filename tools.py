@@ -21,7 +21,7 @@ def get_content(url, payload={}):
     except requests.RequestException as err:
         logger.debug(f"{err} error; url: {url}")
     else:
-        return response.content
+        return response.json()
 
 
 def save_image(image, filepath):

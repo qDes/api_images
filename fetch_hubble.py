@@ -7,10 +7,12 @@ from tools import get_content
 def get_collection_ids(collection) -> List:
     payload = {"page": "all", "collection_name": collection}
     url = 'http://hubblesite.org/api/v3/images'
-    content = json.loads(get_content(url, payload))
+    content = get_content(url, payload)
     ids = []
     for hub in content:
-        ids.append(str(hub.get('id')))
+        id_ = hub.get('id')
+        if id_:
+            ids.append(str(id_))
     return ids
 
 
@@ -25,7 +27,7 @@ def fetch_hubble_urls(collection='spacecraft'):
     collection_urls = []
     for elem in collection_ids:
         url = base_url + elem
-        files = json.loads(get_content(url))
+        files = get_content(url)
         dl = files.get("image_files")[-1].get('file_url')
         dl = "/".join(dl.split("/")[-2:])
         pic_url = dl_url + '/' + dl
