@@ -17,10 +17,6 @@ def get_collection_ids(collection) -> List:
 
 
 def fetch_hubble_urls(collection='spacecraft'):
-    '''Hubble collection names
-        holiday_cards, wallpaper, news, printshop,
-        stsci_gallery, spacecraft, stsci_gallery
-        spacecraft is deault value'''
     collection_ids = get_collection_ids(collection)
     base_url = "http://hubblesite.org/api/v3/image/"
     dl_url = "https://hubblesite.org/uploads/image_file/image_attachment"
